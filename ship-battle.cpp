@@ -18,8 +18,8 @@ void draw_kama_pulya_3d (int x, int y,
 double dist (int x1, int y1, int x2, int y2);
 
 
-void ship_batle_game (int x1, int y1, int vx1, int vy1,
-                      int x2, int y2, int vx2, int vy2,
+void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
+                      int x_shapard_normandy, int y_shapard_normandy, int vy_shapard_normandy,
                       int dt);
 
 void control_ship_battle (int *vy,
@@ -49,8 +49,8 @@ int main()
 {
   txCreateWindow (1000, 600);
 
-  ship_batle_game (116, 143, 0, 5,
-                   624, 143, 0, 5,
+  ship_batle_game (116, 143, 5,
+                   624, 143, 5,
                    1);
 
   //control_ship_battle ();
@@ -220,14 +220,14 @@ double dist (int x1, int y1, int x2, int y2)
 
 
 
-void ship_batle_game (int x1, int y1, int vx1, int vy1,
-                      int x2, int y2, int vx2, int vy2,
+void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
+                      int x_shapard_normandy, int y_shapard_normandy, int vy_shapard_normandy,
                       int dt)
 
 {
-  int x3 = x1, y3 = y1, vx3 = 4;
+  int x_kama_pulya_3d_1 = x_stan_o_war, y_kama_pulya_3d_1 = y_stan_o_war, vx_kama_pulya_3d_1 = 4;
 
-  int x4 = x2, y4 = y2, vx4 = 4;
+  int x_kama_pulya_3d_2 = x_shapard_normandy, y_kama_pulya_3d_2 = y_shapard_normandy, vx_kama_pulya_3d_2 = 4;
 
   int taa = 0;
 
@@ -243,10 +243,10 @@ void ship_batle_game (int x1, int y1, int vx1, int vy1,
     txClear ();
 
 
-    double d1 = dist (x1, y1,
-                      x4, y4);
-    double d2 = dist (x2, y2,
-                      x3, y3);
+    double d1 = dist (x_stan_o_war, y_stan_o_war,
+                      x_kama_pulya_3d_2, y_kama_pulya_3d_2);
+    double d2 = dist (x_shapard_normandy, y_shapard_normandy,
+                      x_kama_pulya_3d_1, y_kama_pulya_3d_1);
 
 
     if (d1 < 35)
@@ -265,34 +265,34 @@ void ship_batle_game (int x1, int y1, int vx1, int vy1,
     }
 
 
-    control_kama_pulya_3D (&x1, &y1,
-                           &x2, &y2,
-                           &x3, &y3,
-                           &x4, &y4,
+    control_kama_pulya_3D (&x_stan_o_war, &y_stan_o_war,
+                           &x_shapard_normandy, &y_shapard_normandy,
+                           &x_kama_pulya_3d_1, &y_kama_pulya_3d_1,
+                           &x_kama_pulya_3d_2, &y_kama_pulya_3d_2,
                            VK_SPACE,
                            &taa);
 
 
-    control_ship_battle (&vy1,
+    control_ship_battle (&vy_stan_o_war,
                          VK_UP, VK_DOWN);
-    move_ship_battle (&y1, &vy1,
+    move_ship_battle (&y_stan_o_war, &vy_stan_o_war,
                       &dt);
 
-    stan_o_war (x1, y1);
+    stan_o_war (x_stan_o_war, y_stan_o_war);
 
 
-    move_ship_battle (&y2, &vy2,
+    move_ship_battle (&y_shapard_normandy, &vy_shapard_normandy,
                       &dt);
 
-    shapard_normandy (x2, y2);
+    shapard_normandy (x_shapard_normandy, y_shapard_normandy);
 
 
-    move_kama_pulya_3D (&x3, &vx3,
+    move_kama_pulya_3D (&x_kama_pulya_3d_1, &vx_kama_pulya_3d_1,
                         &dt,
                         0);
 
 
-    move_kama_pulya_3D (&x4, &vx4,
+    move_kama_pulya_3D (&x_kama_pulya_3d_2, &vx_kama_pulya_3d_2,
                         &dt,
                         1);
 
