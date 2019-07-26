@@ -22,25 +22,20 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
                       int x_shapard_normandy, int y_shapard_normandy, int vy_shapard_normandy,
                       int dt);
 
-void control_ship_battle (int *vy,
-                          int up, int down);
+void control_ship_battle (int *vy_ship,
+                          int up, int down,
+                          int *x_kama_pulya1, int *y_kama_pulya1,
+                          int *x_kama_pulya2, int *y_kama_pulya2,
+                          int *x_kama_pulya3, int *y_kama_pulya3,
+                          int *x_kama_pulya4, int *y_kama_pulya4,
+                          int space,
+                          int *taa);
 
 
-void move_ship_battle (int *y, int *vy,
-                       int *dt);
-
-
-void move_kama_pulya_3D (int *x, int *vx,
-                         int *dt,
-                         int minus_plus);
-
-void control_kama_pulya_3D (int *x1, int *y1,
-                            int *x2, int *y2,
-                            int *x3, int *y3,
-                            int *x4, int *y4,
-                            int space,
-                            int *taa);
-
+void move_ship_battle (int *y_ship, int *vy_ship,
+                       int *x_kama_pulya, int *vx_kama_pulya,
+                       int *dt,
+                       int minus_plus);
 
 
 
@@ -72,7 +67,6 @@ int main()
                         80, 0);*/
   return 0;
 }
-
 
 
 
@@ -212,6 +206,7 @@ void draw_kama_pulya_3d (int x, int y,
 
 
 
+
 double dist (int x1, int y1, int x2, int y2)
 {
   return sqrt ((x2  - x1) * (x2  - x1) + (y2 - y1) * (y2 - y1));
@@ -229,6 +224,10 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
 
   int x_kama_pulya_3d_2 = x_shapard_normandy, y_kama_pulya_3d_2 = y_shapard_normandy, vx_kama_pulya_3d_2 = 4;
 
+  HDC graphika = txLoadImage ("кек.BMP");
+
+  if (graphika == 0) txMessageBox ("лох");
+
   int taa = 0;
 
 
@@ -242,6 +241,10 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
 
     txClear ();
 
+    txBitBlt (0, 0, graphika);
+
+
+
 
     double d1 = dist (x_stan_o_war, y_stan_o_war,
                       x_kama_pulya_3d_2, y_kama_pulya_3d_2);
@@ -251,7 +254,7 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
 
     if (d1 < 35)
     {
-      txMessageBox ("Ты офца ежжи!!");
+      txMessageBox ("Ti ovca eji !!");
 
       break;
     }
@@ -259,140 +262,123 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
 
     if (d2 < 35)
     {
-      txMessageBox ("Красаувчек ежжи!!");
+      txMessageBox ("Krasauvchik eji!!");
 
       break;
     }
 
 
-    control_kama_pulya_3D (&x_stan_o_war, &y_stan_o_war,
-                           &x_shapard_normandy, &y_shapard_normandy,
-                           &x_kama_pulya_3d_1, &y_kama_pulya_3d_1,
-                           &x_kama_pulya_3d_2, &y_kama_pulya_3d_2,
-                           VK_SPACE,
-                           &taa);
-
-
     control_ship_battle (&vy_stan_o_war,
-                         VK_UP, VK_DOWN);
+                         VK_UP, VK_DOWN,
+                         &x_stan_o_war, &y_stan_o_war,
+                         &x_shapard_normandy,&y_shapard_normandy,
+                         &x_kama_pulya_3d_1, &y_kama_pulya_3d_1,
+                         &x_kama_pulya_3d_2, &y_kama_pulya_3d_2,
+                         VK_SPACE,
+                         &taa);
     move_ship_battle (&y_stan_o_war, &vy_stan_o_war,
-                      &dt);
+                      &x_kama_pulya_3d_1, &vx_kama_pulya_3d_1,
+                      &dt,
+                      0);
 
     stan_o_war (x_stan_o_war, y_stan_o_war);
 
 
     move_ship_battle (&y_shapard_normandy, &vy_shapard_normandy,
-                      &dt);
+                      &x_kama_pulya_3d_2, &vx_kama_pulya_3d_2,
+                      &dt,
+                      1);
 
     shapard_normandy (x_shapard_normandy, y_shapard_normandy);
 
-
-    move_kama_pulya_3D (&x_kama_pulya_3d_1, &vx_kama_pulya_3d_1,
-                        &dt,
-                        0);
-
-
-    move_kama_pulya_3D (&x_kama_pulya_3d_2, &vx_kama_pulya_3d_2,
-                        &dt,
-                        1);
-
-
     txSleep (25);
   }
+
+  txDeleteDC (graphika);
 }
 
 
 
 
-void move_ship_battle (int *y, int *vy,
-                       int *dt)
+void move_ship_battle (int *y_ship, int *vy_ship,
+                       int *x_kama_pulya, int *vx_kama_pulya,
+                       int *dt,
+                       int minus_plus)
 {
-  if ((*y) < 0)
-    (*vy) = - (*vy);
+  if ((*y_ship) < 0)
+    (*vy_ship) = - (*vy_ship);
 
-  if ((*y) > 600)
-    (*vy) = - (*vy);
-
-
-  *y = *y + *vy * *dt;
-}
+  if ((*y_ship) > 600)
+    (*vy_ship) = - (*vy_ship);
 
 
+  *y_ship = *y_ship + *vy_ship * *dt;
 
-
-void move_kama_pulya_3D (int *x, int *vx,
-                         int *dt,
-                         int minus_plus)
-{
   if (minus_plus == 0)
   {
-  *x = *x + *vx * *dt;
+  *x_kama_pulya = *x_kama_pulya + *vx_kama_pulya * *dt;
   }
 
   if (minus_plus == 1)
   {
-  *x = *x - *vx * *dt;
+  *x_kama_pulya = *x_kama_pulya - *vx_kama_pulya * *dt;
   }
 }
 
 
 
 
-void control_ship_battle (int *vy,
-                          int up, int down)
+void control_ship_battle (int *vy_ship,
+                          int up, int down,
+                          int *x_kama_pulya1, int *y_kama_pulya1,
+                          int *x_kama_pulya2, int *y_kama_pulya2,
+                          int *x_kama_pulya3, int *y_kama_pulya3,
+                          int *x_kama_pulya4, int *y_kama_pulya4,
+                          int space,
+                          int *taa)
 {
-if (GetAsyncKeyState (up))
-        (*vy)--;
+  if (GetAsyncKeyState (up))
+    (*vy_ship)--;
 
-if (GetAsyncKeyState (down))
-        (*vy)++;
-}
+  if (GetAsyncKeyState (down))
+    (*vy_ship)++;
 
-
-
-
-void control_kama_pulya_3D (int *x1, int *y1,
-                            int *x2, int *y2,
-                            int *x3, int *y3,
-                            int *x4, int *y4,
-                            int space,
-                            int *taa)
-{
 
   if (GetAsyncKeyState (space))
   {
     *taa = 1;
 
-    *x3 = *x1;
+    *x_kama_pulya3 = *x_kama_pulya1;
 
-    *y3 = *y1;
+    *y_kama_pulya3 = *y_kama_pulya1;
 
-    *x4 = *x2;
+    *x_kama_pulya4 = *x_kama_pulya2;
 
-    *y4 = *y2;
+    *y_kama_pulya4 = *y_kama_pulya2;
 
   }
 
 
   if ((*taa) == 1)
   {
-    draw_kama_pulya_3d (*x3, *y3,
-                            10,
-                            80, 0);
+    draw_kama_pulya_3d (*x_kama_pulya3, *y_kama_pulya3,
+                        10,
+                        80, 0);
 
 
-    draw_kama_pulya_3d (*x4, *y4,
-                            10,
-                            0, 80);
+    draw_kama_pulya_3d (*x_kama_pulya4, *y_kama_pulya4,
+                        10,
+                        0, 80);
 
 
     txSetColor (TX_RED);
 
-    txTextOut (355, 35, "шааа!!");
+    txTextOut (355, 35, "shaa!!");
 
 
     txSetColor (TX_GREEN);
 
-    txTextOut (555, 35, "Будь Дерзким!!");
+    txTextOut (555, 35, "bud derzkim!!");
   }
+
 }
