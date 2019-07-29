@@ -1,3 +1,6 @@
 *.save
-*.exe*.BMP
+
+*.exe
+*.BMP
+*.log
 
