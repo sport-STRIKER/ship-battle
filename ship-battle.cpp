@@ -1,9 +1,10 @@
 #include "TXLib.h"
 
 
-void stan_o_war (int x, int y);
+void stan_o_war (int x, int y, HDC ship);
 
-void shapard_normandy (int x, int y);
+
+void shapard_normandy (int x, int y, HDC ship);
 
 void kama_pulya_3d (int x, int y,
                     int r,
@@ -56,6 +57,8 @@ int main()
 
   //move_kama_pulya_3D ();
 
+  //draw_stan_o_war (116, 143);
+
   //stan_o_war (116, 143);
 
   //shapard_normandy (413, 143);
@@ -65,105 +68,23 @@ int main()
   /*draw_kama_pulya_3d (200, 200,
                         20,
                         80, 0);*/
+
   return 0;
 }
 
 
 
-void stan_o_war (int x, int y)
+void stan_o_war (int x, int y, HDC ship)
 {
-  int x_machta1 = x;
-  int y_machta1 = y - 56;
-
-
-  int x_korma1 = x - 33;
-  int y_korma1 = y;
-
-
-  int x_korma2 = x + 35;
-  int y_korma2 = y + 37;
-
-
-  int x_parus1 = x_machta1;
-  int y_parus1 = y_machta1;
-
-
-  int x_parus2 = x_korma1;
-  int y_parus2 = y_korma1;
-
-
-  int x_parus3 = x_korma2;
-  int y_parus3 = y_korma1;
-
-
-  txSetColor (RGB (185, 122, 87));
-
-  txLine (x_machta1, y_machta1,
-          x, y);
-
-  txSetColor (TX_WHITE);
-  txSetFillColor (TX_WHITE);
-
-  txLine (x_parus1, y_parus1,
-          x_parus2, y_parus2);
-  txLine (x_parus1, y_parus1,
-          x_parus3, y_parus3);
-
-
-  txSetColor (RGB (185, 122, 87));
-  txSetFillColor (TX_BLACK);
-
-  txRectangle (x_korma1, y_korma1,
-               x_korma2, y_korma2);
+  txTransparentBlt (x, y, ship, TX_WHITE);
 }
 
 
 
 
-void shapard_normandy (int x, int y)
+void shapard_normandy (int x, int y, HDC ship)
 {
-  int x_machta1 = x;
-  int y_machta1 = y - 56;
-
-
-  int x_korma1 = x - 33;
-  int y_korma1 = y;
-
-
-  int x_korma2 = x + 35;
-  int y_korma2 = y + 37;
-
-
-  int x_parus1 = x_machta1;
-  int y_parus1 = y_machta1;
-
-
-  int x_parus2 = x_korma1;
-  int y_parus2 = y_korma1;
-
-
-  int x_parus3 = x_korma2;
-  int y_parus3 = y_korma1;
-
-  txSetColor (TX_GREEN);
-
-  txLine (x_machta1, y_machta1,
-          x, y);
-
-  txSetColor (TX_WHITE);
-  txSetFillColor (TX_WHITE);
-
-  txLine (x_parus1, y_parus1,
-          x_parus2, y_parus2);
-  txLine (x_parus1, y_parus1,
-          x_parus3, y_parus3);
-
-
-  txSetColor (TX_RED);
-  txSetFillColor (TX_BLACK);
-
-  txRectangle (x_korma1, y_korma1,
-               x_korma2, y_korma2);
+  txTransparentBlt (x, y, ship, TX_WHITE);
 }
 
 
@@ -218,15 +139,25 @@ double dist (int x1, int y1, int x2, int y2)
 void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
                       int x_shapard_normandy, int y_shapard_normandy, int vy_shapard_normandy,
                       int dt)
-
 {
   int x_kama_pulya_3d_1 = x_stan_o_war, y_kama_pulya_3d_1 = y_stan_o_war, vx_kama_pulya_3d_1 = 4;
 
   int x_kama_pulya_3d_2 = x_shapard_normandy, y_kama_pulya_3d_2 = y_shapard_normandy, vx_kama_pulya_3d_2 = 4;
 
-  HDC graphika = txLoadImage ("кек.BMP");
+  HDC graphika = txLoadImage ("кек.bmp");
 
   if (graphika == 0) txMessageBox ("лох");
+
+
+  HDC ship = txLoadImage ("посудина.bmp");
+
+  if (ship == 0) txMessageBox ("sorry bat you lox");
+
+
+  HDC korabl = txLoadImage ("корабль.bmp");
+
+  if (ship == 0) txMessageBox ("sorry bat you looser");
+
 
   int taa = 0;
 
@@ -241,7 +172,7 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
 
     txClear ();
 
-    txBitBlt (0, 0, graphika);
+    txBitBlt (txDC(), 0, 0, 1000, 600, graphika);
 
 
 
@@ -281,7 +212,7 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
                       &dt,
                       0);
 
-    stan_o_war (x_stan_o_war, y_stan_o_war);
+    stan_o_war (x_stan_o_war, y_stan_o_war, korabl);
 
 
     move_ship_battle (&y_shapard_normandy, &vy_shapard_normandy,
@@ -289,12 +220,16 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
                       &dt,
                       1);
 
-    shapard_normandy (x_shapard_normandy, y_shapard_normandy);
+    shapard_normandy (x_shapard_normandy, y_shapard_normandy, ship);
 
     txSleep (25);
   }
 
   txDeleteDC (graphika);
+
+  txDeleteDC (ship);
+
+  txDeleteDC (korabl);
 }
 
 
