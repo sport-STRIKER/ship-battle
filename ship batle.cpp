@@ -77,6 +77,50 @@ int main()
 void stan_o_war (int x, int y, HDC ship)
 {
   txTransparentBlt (x, y, ship, TX_WHITE);
+
+
+  /*int x_machta1 = x;
+  int y_machta1 = y - 56;
+
+
+  int x_korma1 = x - 33;
+  int y_korma1 = y;
+
+
+  int x_korma2 = x + 35;
+  int y_korma2 = y + 37;
+
+
+  int x_parus1 = x_machta1;
+  int y_parus1 = y_machta1;
+
+
+  int x_parus2 = x_korma1;
+  int y_parus2 = y_korma1;
+
+
+  int x_parus3 = x_korma2;
+  int y_parus3 = y_korma1;
+
+  txSetColor (TX_BLUE);
+
+  txLine (x_machta1, y_machta1,
+          x, y);
+
+  txSetColor (TX_WHITE);
+  txSetFillColor (TX_WHITE);
+
+  txLine (x_parus1, y_parus1,
+          x_parus2, y_parus2);
+  txLine (x_parus1, y_parus1,
+          x_parus3, y_parus3);
+
+
+  txSetColor (RGB (185, 122, 87));
+  txSetFillColor (TX_BLACK);
+
+  txRectangle (x_korma1, y_korma1,
+               x_korma2, y_korma2);*/
 }
 
 
@@ -85,6 +129,50 @@ void stan_o_war (int x, int y, HDC ship)
 void shapard_normandy (int x, int y, HDC ship)
 {
   txTransparentBlt (x, y, ship, TX_WHITE);
+
+
+  /*int x_machta1 = x;
+  int y_machta1 = y - 56;
+
+
+  int x_korma1 = x - 33;
+  int y_korma1 = y;
+
+
+  int x_korma2 = x + 35;
+  int y_korma2 = y + 37;
+
+
+  int x_parus1 = x_machta1;
+  int y_parus1 = y_machta1;
+
+
+  int x_parus2 = x_korma1;
+  int y_parus2 = y_korma1;
+
+
+  int x_parus3 = x_korma2;
+  int y_parus3 = y_korma1;
+
+  txSetColor (TX_GREEN);
+
+  txLine (x_machta1, y_machta1,
+          x, y);
+
+  txSetColor (TX_WHITE);
+  txSetFillColor (TX_WHITE);
+
+  txLine (x_parus1, y_parus1,
+          x_parus2, y_parus2);
+  txLine (x_parus1, y_parus1,
+          x_parus3, y_parus3);
+
+
+  txSetColor (TX_RED);
+  txSetFillColor (TX_BLACK);
+
+  txRectangle (x_korma1, y_korma1,
+               x_korma2, y_korma2);*/
 }
 
 
@@ -185,6 +273,8 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
 
     if (d1 < 35)
     {
+      txPlaySound ("lox.wav");
+
       txMessageBox ("Ti ovca eji !!");
 
       break;
@@ -193,6 +283,8 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
 
     if (d2 < 35)
     {
+      txPlaySound ("Roma.wav");
+
       txMessageBox ("Krasauvchik eji!!");
 
       break;
@@ -251,12 +343,13 @@ void move_ship_battle (int *y_ship, int *vy_ship,
 
   if (minus_plus == 0)
   {
-  *x_kama_pulya = *x_kama_pulya + *vx_kama_pulya * *dt;
+    *x_kama_pulya = *x_kama_pulya + *vx_kama_pulya * *dt;
   }
+
 
   if (minus_plus == 1)
   {
-  *x_kama_pulya = *x_kama_pulya - *vx_kama_pulya * *dt;
+    *x_kama_pulya = *x_kama_pulya - *vx_kama_pulya * *dt;
   }
 }
 
@@ -290,6 +383,10 @@ void control_ship_battle (int *vy_ship,
     *x_kama_pulya4 = *x_kama_pulya2;
 
     *y_kama_pulya4 = *y_kama_pulya2;
+
+    txPlaySound ("gun5.wav");
+
+    txPlaySound ("gun6.wav");
 
   }
 
