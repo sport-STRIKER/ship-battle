@@ -1,55 +1,79 @@
 #include "TXLib.h"
 
+const int Strike1 = 30;
+const int Strike2 = 35;
 
-void stan_o_war (int x, int y, HDC ship);
+struct korabl
+{
+  int x;
 
-
-void shapard_normandy (int x, int y, HDC ship);
-
-void kama_pulya_3d (int x, int y,
-                    int r,
-                    COLORREF cvet);
-
-
-void draw_kama_pulya_3d (int x, int y,
-                         int rmax,
-                         int color1, int color2);
+  int y;
+};
 
 
-double dist (int x1, int y1, int x2, int y2);
+void stan_o_war(int x, int y, HDC ship);
 
 
-void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
-                      int x_shapard_normandy, int y_shapard_normandy, int vy_shapard_normandy,
-                      int dt);
-
-void control_ship_battle (int *vy_ship,
-                          int up, int down,
-                          int *x_kama_pulya1, int *y_kama_pulya1,
-                          int *x_kama_pulya2, int *y_kama_pulya2,
-                          int *x_kama_pulya3, int *y_kama_pulya3,
-                          int *x_kama_pulya4, int *y_kama_pulya4,
-                          int space,
-                          int *taa);
+void shapard_normandy(int x, int y, HDC ship);
 
 
-void move_ship_battle (int *y_ship, int *vy_ship,
-                       int *x_kama_pulya, int *vx_kama_pulya,
-                       int *dt,
-                       int minus_plus);
+void kama_pulya_3d(int x, int y,
+                   int r,
+                   COLORREF cvet);
 
 
+void draw_kama_pulya_3d(int x, int y,
+                        int rmax,
+                        int color1, int color2);
+
+
+double dist(int x1, int y1, int x2, int y2);
+
+
+void ship_batle_game(struct korabl ship_stan_o_war, int vy_stan_o_war,
+                     struct korabl ship_shapard_normandy, int vy_shapard_normandy,
+                     int dt);
+
+
+void control_ship_battle(int *vy_ship,
+                         int up, int down,
+                         struct korabl *stan_o_war,
+                         struct korabl *shapard_normandy,
+                         int *x_kama_pulya3, int *y_kama_pulya3,
+                         int *x_kama_pulya4, int *y_kama_pulya4,
+                         int space,
+                         int *taa);
+
+
+void move_ship_battle(struct korabl *ship, int *vy_ship,
+                      int *x_kama_pulya, int *vx_kama_pulya,
+                      int *dt,
+                      int minus_plus);
 
 
 int main()
 {
   txCreateWindow (1000, 600);
 
-  ship_batle_game (116, 143, 5,
-                   624, 143, 5,
+  struct korabl stan_o_war;
+
+  stan_o_war.x = 116;
+
+  stan_o_war.y = 143;
+
+
+  struct korabl shapard_normandy;
+
+  shapard_normandy.x = 824;
+
+  shapard_normandy.y = 143;
+
+
+  ship_batle_game (stan_o_war, 5,
+                   shapard_normandy, 5,
                    1);
 
-  //control_ship_battle ();
+  /*control_ship_battle ();
 
   //control_kama_pulya_3D ();
 
@@ -71,12 +95,25 @@ int main()
 
   return 0;
 }
-
-
-
-void stan_o_war (int x, int y, HDC ship)
+void stan_o_war(int x, int y, HDC ship)
 {
-  txTransparentBlt (x, y, ship, TX_WHITE);
+  int x_diff = txGetExtentX (ship) / 2;
+  int y_diff = txGetExtentY (ship) / 2 + 20;
+
+  txTransparentBlt (x - x_diff, y - y_diff, ship, TX_WHITE);
+
+  /*txSetFillColor (TX_YELLOW);
+
+  //printf("%d %d\n", txGetExtentX (ship), txGetExtentY (ship));
+
+  txCircle (x, y, 5);
+
+
+  txSetColor (TX_YELLOW);
+
+  txSetFillColor (TX_NULL);
+
+  txCircle (x, y, Strike1);
 
 
   /*int x_machta1 = x;
@@ -125,10 +162,26 @@ void stan_o_war (int x, int y, HDC ship)
 
 
 
-
-void shapard_normandy (int x, int y, HDC ship)
+void shapard_normandy(int x, int y, HDC ship)
 {
-  txTransparentBlt (x, y, ship, TX_WHITE);
+  int x_diff = txGetExtentX (ship) / 2 - 20;
+  int y_diff = txGetExtentY (ship) / 2 + 20;
+
+  txTransparentBlt (x - x_diff, y - y_diff, ship, TX_WHITE);
+
+/*txSetFillColor (TX_YELLOW);
+
+//printf("%d %d\n", txGetExtentX (ship), txGetExtentY (ship));
+
+  txCircle (x, y, 5);
+
+
+  txSetColor (TX_YELLOW);
+
+  txSetFillColor (TX_NULL);
+
+  txCircle (x, y, Strike2);
+
 
 
   /*int x_machta1 = x;
@@ -177,10 +230,9 @@ void shapard_normandy (int x, int y, HDC ship)
 
 
 
-
-void kama_pulya_3d (int x, int y,
-                    int r,
-                    COLORREF cvet)
+void kama_pulya_3d(int x, int y,
+                   int r,
+                   COLORREF cvet)
 {
   txSetColor (cvet);
   txSetFillColor (cvet);
@@ -190,10 +242,9 @@ void kama_pulya_3d (int x, int y,
 
 
 
-
-void draw_kama_pulya_3d (int x, int y,
-                         int rmax,
-                         int color1, int color2)
+void draw_kama_pulya_3d(int x, int y,
+                        int rmax,
+                        int color1, int color2)
 {
   int t = 0;
 
@@ -214,37 +265,34 @@ void draw_kama_pulya_3d (int x, int y,
 
 
 
-
-
-double dist (int x1, int y1, int x2, int y2)
+double dist(int x1, int y1, int x2, int y2)
 {
   return sqrt ((x2  - x1) * (x2  - x1) + (y2 - y1) * (y2 - y1));
 }
 
 
 
-
-void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
-                      int x_shapard_normandy, int y_shapard_normandy, int vy_shapard_normandy,
-                      int dt)
+void ship_batle_game(struct korabl ship_stan_o_war, int vy_stan_o_war,
+                     struct korabl ship_shapard_normandy, int vy_shapard_normandy,
+                     int dt)
 {
-  int x_kama_pulya_3d_1 = x_stan_o_war, y_kama_pulya_3d_1 = y_stan_o_war, vx_kama_pulya_3d_1 = 4;
+  int x_kama_pulya_3d_1 = ship_stan_o_war.x, y_kama_pulya_3d_1 = ship_stan_o_war.y, vx_kama_pulya_3d_1 = 5;
 
-  int x_kama_pulya_3d_2 = x_shapard_normandy, y_kama_pulya_3d_2 = y_shapard_normandy, vx_kama_pulya_3d_2 = 4;
+  int x_kama_pulya_3d_2 = ship_shapard_normandy.x, y_kama_pulya_3d_2 = ship_shapard_normandy.y, vx_kama_pulya_3d_2 = 5;
 
   HDC graphika = txLoadImage ("кек.bmp");
 
   if (graphika == 0) txMessageBox ("лох");
 
 
-  HDC ship = txLoadImage ("посудина.bmp");
+  HDC korabel = txLoadImage ("посудина.bmp");
 
-  if (ship == 0) txMessageBox ("sorry bat you lox");
+  if (korabel == 0) txMessageBox ("sorry bat you lox");
 
 
-  HDC korabl = txLoadImage ("корабль.bmp");
+  HDC korabelbel = txLoadImage ("корабль.bmp");
 
-  if (ship == 0) txMessageBox ("sorry bat you looser");
+  if (korabelbel == 0) txMessageBox ("sorry bat you looser");
 
 
   int taa = 0;
@@ -263,15 +311,13 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
     txBitBlt (txDC(), 0, 0, 1000, 600, graphika);
 
 
-
-
-    double d1 = dist (x_stan_o_war, y_stan_o_war,
+    double d1 = dist (ship_stan_o_war.x, ship_stan_o_war.y,
                       x_kama_pulya_3d_2, y_kama_pulya_3d_2);
-    double d2 = dist (x_shapard_normandy, y_shapard_normandy,
+    double d2 = dist (ship_shapard_normandy.x, ship_shapard_normandy.y,
                       x_kama_pulya_3d_1, y_kama_pulya_3d_1);
 
 
-    if (d1 < 35)
+    if (d1 < Strike1)
     {
       txPlaySound ("lox.wav");
 
@@ -281,9 +327,9 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
     }
 
 
-    if (d2 < 35)
+    if (d2 < Strike2)
     {
-      txPlaySound ("Roma.wav");
+      txPlaySound ("jorik.wav");
 
       txMessageBox ("Krasauvchik eji!!");
 
@@ -293,53 +339,53 @@ void ship_batle_game (int x_stan_o_war, int y_stan_o_war, int vy_stan_o_war,
 
     control_ship_battle (&vy_stan_o_war,
                          VK_UP, VK_DOWN,
-                         &x_stan_o_war, &y_stan_o_war,
-                         &x_shapard_normandy,&y_shapard_normandy,
+                         &ship_stan_o_war,
+                         &ship_shapard_normandy,
                          &x_kama_pulya_3d_1, &y_kama_pulya_3d_1,
                          &x_kama_pulya_3d_2, &y_kama_pulya_3d_2,
                          VK_SPACE,
                          &taa);
-    move_ship_battle (&y_stan_o_war, &vy_stan_o_war,
+
+    move_ship_battle (&ship_stan_o_war, &vy_stan_o_war,
                       &x_kama_pulya_3d_1, &vx_kama_pulya_3d_1,
                       &dt,
                       0);
 
-    stan_o_war (x_stan_o_war, y_stan_o_war, korabl);
+    stan_o_war (ship_stan_o_war.x, ship_stan_o_war.y, korabel);
 
 
-    move_ship_battle (&y_shapard_normandy, &vy_shapard_normandy,
+    move_ship_battle (&ship_shapard_normandy, &vy_shapard_normandy,
                       &x_kama_pulya_3d_2, &vx_kama_pulya_3d_2,
                       &dt,
                       1);
 
-    shapard_normandy (x_shapard_normandy, y_shapard_normandy, ship);
+    shapard_normandy (ship_shapard_normandy.x, ship_shapard_normandy.y, korabelbel);
 
     txSleep (25);
   }
 
   txDeleteDC (graphika);
 
-  txDeleteDC (ship);
+  txDeleteDC (korabel);
 
-  txDeleteDC (korabl);
+  txDeleteDC (korabelbel);
 }
 
 
 
-
-void move_ship_battle (int *y_ship, int *vy_ship,
-                       int *x_kama_pulya, int *vx_kama_pulya,
-                       int *dt,
-                       int minus_plus)
+void move_ship_battle(struct korabl *ship, int *vy_ship,
+                      int *x_kama_pulya, int *vx_kama_pulya,
+                      int *dt,
+                      int minus_plus)
 {
-  if ((*y_ship) < 0)
+  if ((ship->y) < 0)
     (*vy_ship) = - (*vy_ship);
 
-  if ((*y_ship) > 600)
+  if ((ship->y) > 600)
     (*vy_ship) = - (*vy_ship);
 
 
-  *y_ship = *y_ship + *vy_ship * *dt;
+  ship->y = ship->y + *vy_ship * *dt;
 
   if (minus_plus == 0)
   {
@@ -355,15 +401,14 @@ void move_ship_battle (int *y_ship, int *vy_ship,
 
 
 
-
-void control_ship_battle (int *vy_ship,
-                          int up, int down,
-                          int *x_kama_pulya1, int *y_kama_pulya1,
-                          int *x_kama_pulya2, int *y_kama_pulya2,
-                          int *x_kama_pulya3, int *y_kama_pulya3,
-                          int *x_kama_pulya4, int *y_kama_pulya4,
-                          int space,
-                          int *taa)
+void control_ship_battle(int *vy_ship,
+                         int up, int down,
+                         struct korabl *stan_o_war,
+                         struct korabl *shapard_normandy,
+                         int *x_kama_pulya3, int *y_kama_pulya3,
+                         int *x_kama_pulya4, int *y_kama_pulya4,
+                         int space,
+                         int *taa)
 {
   if (GetAsyncKeyState (up))
     (*vy_ship)--;
@@ -376,13 +421,13 @@ void control_ship_battle (int *vy_ship,
   {
     *taa = 1;
 
-    *x_kama_pulya3 = *x_kama_pulya1;
+    *x_kama_pulya3 = stan_o_war->x;
 
-    *y_kama_pulya3 = *y_kama_pulya1;
+    *y_kama_pulya3 = stan_o_war->y;
 
-    *x_kama_pulya4 = *x_kama_pulya2;
+    *x_kama_pulya4 = shapard_normandy->x;
 
-    *y_kama_pulya4 = *y_kama_pulya2;
+    *y_kama_pulya4 = shapard_normandy->y;
 
     txPlaySound ("gun5.wav");
 
