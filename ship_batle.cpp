@@ -3,49 +3,38 @@
 const int Strike1 = 30;
 const int Strike2 = 35;
 
-struct ship_battle
+struct object
 {
-  int x_stan_o_war;
+ int x;
 
-  int y_stan_o_war;
+ int y;
 
-  int vy_stan_o_war;
-
-
-  int x_shapard_normandy;
-
-  int y_shapard_normandy;
-
-  int vy_shapard_normandy;
-
-
-  int x_taa;
-
-  int y_taa;
-
-  int vx_taa;
-
-
-  int x_shaa;
-
-  int y_shaa;
-
-  int vx_shaa;
+ int v;
 };
 
+struct ship_battle
+{
+  object ship_left;
 
-void stan_o_war(int x, int y, HDC ship);
+  object ship_right;
+
+  object bullet_left;
+
+  object bullet_right;
+};
+
+void ship1(int x, int y, HDC ship);
 
 
-void shapard_normandy(int x, int y, HDC ship);
+void ship2(int x, int y, HDC ship);
 
 
-void kama_pulya_3d(int x, int y,
+void bullet_3d(int x, int y,
                    int r,
                    COLORREF cvet);
 
 
-void draw_kama_pulya_3d(int x, int y,
+void draw_bullet_3d(int x, int y,
                         int rmax,
                         int color1, int color2);
 
@@ -60,7 +49,7 @@ void ship_batle_game(struct ship_battle game,
 void control_ship_battle(struct ship_battle *game,
                          int up, int down,
                          int space,
-                         bool ovca_eji);
+                         bool proviso);
 
 
 void move_ship_battle(struct ship_battle *game,
@@ -72,13 +61,21 @@ int main()
 {
   txCreateWindow (1000, 600);
 
-  struct ship_battle game =
-  {
-    116, 143, 7,
-    824, 143, 7,
-    116, 143, 5,
-    824, 143, 5
-  };
+  struct object ship_left = {116, 143, 7};
+
+  struct object ship_right = {824, 143, 7};
+
+  struct object bullet_left = {116, 143, 7};
+
+  struct object bullet_right = {824, 143, 7};
+
+  struct ship_battle game;
+
+  game.ship_left = ship_left;
+  game.ship_right = ship_right;
+  game.bullet_left = bullet_left;
+  game.bullet_right = bullet_right;
+
 
   ship_batle_game (game,
                    1);
@@ -99,7 +96,7 @@ draw_kama_pulya_3d (200, 200,
 }
 
 
-void stan_o_war(int x, int y, HDC ship)
+void ship1(int x, int y, HDC ship)
 {
   int x_diff = txGetExtentX (ship) / 2;
   int y_diff = txGetExtentY (ship) / 2 + 20;
@@ -141,7 +138,7 @@ void stan_o_war(int x, int y, HDC ship)
 
 
 
-void shapard_normandy(int x, int y, HDC ship)
+void ship2(int x, int y, HDC ship)
 {
   int x_diff = txGetExtentX (ship) / 2 - 20;
   int y_diff = txGetExtentY (ship) / 2 + 20;
@@ -183,9 +180,9 @@ void shapard_normandy(int x, int y, HDC ship)
 
 
 
-void kama_pulya_3d(int x, int y,
-                   int r,
-                   COLORREF cvet)
+void bullet_3d(int x, int y,
+               int r,
+               COLORREF cvet)
 {
   txSetColor (cvet);
   txSetFillColor (cvet);
@@ -195,9 +192,9 @@ void kama_pulya_3d(int x, int y,
 
 
 
-void draw_kama_pulya_3d(int x, int y,
-                        int rmax,
-                        int color1, int color2)
+void draw_bullet_3d(int x, int y,
+                    int rmax,
+                    int color1, int color2)
 {
   int t = 0;
 
@@ -207,10 +204,9 @@ void draw_kama_pulya_3d(int x, int y,
     int radius = rmax - (rmax / 50.0) * t;
     COLORREF cvet = RGB (color1 + (color1 / 25.0) * t, color2 + (color2 / 25.0) * t, 0);
 
-
-    kama_pulya_3d (x, y,
-                   radius,
-                   cvet);
+     bullet_3d (x, y,
+                radius,
+                cvet);
 
     t++;
   }
@@ -229,7 +225,7 @@ void ship_batle_game(struct ship_battle game,
 {
   HDC graphika = txLoadImage ("space.bmp");
 
-  if (graphika == 0) txMessageBox ("Г«Г®Гµ");
+  if (graphika == 0) txMessageBox ("ëîõ");
 
 
   HDC korabel = txLoadImage ("tortuga.bmp");
@@ -240,9 +236,6 @@ void ship_batle_game(struct ship_battle game,
   HDC korabelbel = txLoadImage ("vessel.bmp");
 
   if (korabelbel == 0) txMessageBox ("sorry bat you looser");
-
-
-  int taa = 0;
 
 
   while (true)
@@ -258,10 +251,11 @@ void ship_batle_game(struct ship_battle game,
     txBitBlt (txDC(), 0, 0, 1000, 600, graphika);
 
 
-    double d1 = dist (game.x_stan_o_war, game.y_stan_o_war,
-                      game.x_shaa, game.y_shaa);
-    double d2 = dist (game.x_shapard_normandy, game.y_shapard_normandy,
-                      game.x_taa, game.y_taa);
+    double d1 = dist (game.ship_left.x, game.ship_left.y,
+                      game.bullet_right.x, game.bullet_right.x);
+
+    double d2 = dist (game.ship_right.x, game.ship_right.y,
+                      game.bullet_left.x, game.bullet_left.y);
 
 
     if (d1 < Strike1)
@@ -293,14 +287,14 @@ void ship_batle_game(struct ship_battle game,
                       &dt,
                       0);
 
-    stan_o_war (game.x_stan_o_war, game.y_stan_o_war, korabel);
+    ship1 (game.ship_left.x, game.ship_left.y, korabel);
 
 
     move_ship_battle (&game,
                       &dt,
                       1);
 
-    shapard_normandy (game.x_shapard_normandy, game.y_shapard_normandy, korabelbel);
+    ship2 (game.ship_right.x, game.ship_right.y, korabelbel);
 
     txSleep (25);
   }
@@ -318,32 +312,32 @@ void move_ship_battle(struct ship_battle *game,
                       int *dt,
                       bool minus_plus)
 {
-  if (game->y_stan_o_war < 0)
-    game->vy_stan_o_war = - game->vy_stan_o_war;
+  if (game->ship_left.y < 0)
+    game->ship_left.v = - game->ship_left.v;
 
-  if (game->y_stan_o_war > 600)
-    game->vy_stan_o_war = - game->vy_stan_o_war;
+  if (game->ship_left.y > 600)
+    game->ship_left.v = - game->ship_left.v;
 
-  if (game->y_shapard_normandy  < 0)
-    game->vy_shapard_normandy  = - game->vy_shapard_normandy;
+  if (game->ship_right.y < 0)
+    game->ship_right.v  = - game->ship_right.v;
 
-  if (game->y_shapard_normandy  > 600)
-    game->vy_shapard_normandy  = - game->vy_shapard_normandy;
+  if (game->ship_right.y > 600)
+    game->ship_right.v  = - game->ship_right.v;
 
 
-  game->y_stan_o_war = game->y_stan_o_war + game->vy_stan_o_war * *dt;
+  game->ship_left.y = game->ship_left.y + game->ship_left.v * *dt;
 
-  game->y_shapard_normandy = game->y_shapard_normandy + game->vy_shapard_normandy * *dt;
+  game->ship_right.y = game->ship_right.y + game->ship_right.v * *dt;
 
   if (minus_plus == 0)
   {
-    game->x_taa = game->x_taa + game->vx_taa * *dt;
+    game->bullet_left.x = game->bullet_left.x + game->bullet_left.v * *dt;
   }
 
 
   if (minus_plus == 1)
   {
-    game->x_shaa = game->x_shaa - game->vx_shaa * *dt;
+    game->bullet_right.x = game->bullet_right.x - game->bullet_right.v * *dt;
   }
 }
 
@@ -352,26 +346,26 @@ void move_ship_battle(struct ship_battle *game,
 void control_ship_battle(struct ship_battle *game,
                          int up, int down,
                          int space,
-                         bool ovca_eji)
+                         bool proviso)
 {
   if (GetAsyncKeyState (up))
-    (game-> vy_stan_o_war)--;
+    (game->ship_left.v)--;
 
   if (GetAsyncKeyState (down))
-    (game-> vy_stan_o_war)++;
+    (game->ship_left.v)++;
 
 
   if (GetAsyncKeyState (space))
   {
-    ovca_eji = 1;
+    proviso = 1;
 
-    game->x_taa = game->x_stan_o_war;
+    game->bullet_left.x = game->ship_left.x;
 
-    game->y_taa = game->y_stan_o_war;
+    game->bullet_left.y = game->ship_left.y;
 
-    game->x_shaa = game->x_shapard_normandy;
+    game->bullet_right.x = game->ship_right.x;
 
-    game->y_shaa = game->y_shapard_normandy;
+    game->bullet_right.y = game->ship_right.y;
 
     txPlaySound ("gun5.wav");
 
@@ -380,16 +374,16 @@ void control_ship_battle(struct ship_battle *game,
   }
 
 
-  if (ovca_eji == 1)
+  if (proviso == 1)
   {
-    draw_kama_pulya_3d (game->x_taa, game->y_taa,
-                        10,
-                        80, 0);
+    draw_bullet_3d (game->bullet_left.x, game->bullet_left.y,
+                    10,
+                    80, 0);
 
 
-    draw_kama_pulya_3d (game->x_shaa, game->y_shaa,
-                        10,
-                        0, 80);
+    draw_bullet_3d (game->bullet_right.x, game->bullet_right.y,
+                    10,
+                    0, 80);
 
 
     txSetColor (TX_RED);
